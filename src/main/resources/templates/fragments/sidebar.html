@@ -1,24 +1,15 @@
-<div th:fragment="sidebar" class="bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
-    <h4 class="mb-4">Sistema Compras</h4>
+<div th:fragment="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon">🛒</div>
+        <span>Sistema Compras</span>
+    </div>
 
-    <ul class="nav flex-column">
-        <li class="nav-item">
-            <a class="nav-link text-white" href="/">Dashboard</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-white" href="/departamento">Departamento</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-white" href="/proveedor">Proveedor</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-white" href="/articulo">Artículo</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-white" href="/unidadmedida">Unidad de Medida</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-white" href="#">Orden de Compra</a>
-        </li>
+    <ul class="sidebar-menu">
+        <li><a href="/">📊 Dashboard</a></li>
+        <li><a href="/departamento">🏢 Departamentos</a></li>
+        <li><a href="/proveedor">🚚 Proveedores</a></li>
+        <li><a href="/unidadmedida">📏 Unidades de Medida</a></li>
+        <li><a href="/articulo">📦 Artículos</a></li>
+        <li><a href="/ordencompra">🧾 Órdenes de Compra</a></li>
     </ul>
 </div>

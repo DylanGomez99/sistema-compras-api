@@ -1,4 +1,11 @@
-<nav th:fragment="navbar(titulo)" class="navbar navbar-light bg-white shadow-sm px-4">
-  <span class="navbar-brand mb-0 h1" th:text="${titulo}">Dashboard</span>
-  <span>Administrador</span>
+<nav th:fragment="navbar(titulo)" class="topbar">
+  <div class="topbar-title" th:text="${titulo}">Dashboard</div>
+
+  <div class="topbar-user">
+    <div class="avatar">SC</div>
+    <div>
+      <strong>Administrador</strong>
+      <small>admin@sistema.com</small>
+    </div>
+  </div>
 </nav>
