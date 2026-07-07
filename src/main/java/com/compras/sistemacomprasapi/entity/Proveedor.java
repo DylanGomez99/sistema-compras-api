@@ -10,6 +10,12 @@ public class Proveedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 20)
+    private String tipoDocumento;
+
+    @Column(length = 20)
+    private String cedulaRnc;
+
     @Column(nullable = false, length = 100)
     private String nombre;
 
@@ -29,8 +35,20 @@ public class Proveedor {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+    }
+
+    public String getCedulaRnc() {
+        return cedulaRnc;
+    }
+
+    public void setCedulaRnc(String cedulaRnc) {
+        this.cedulaRnc = cedulaRnc;
     }
 
     public String getNombre() {

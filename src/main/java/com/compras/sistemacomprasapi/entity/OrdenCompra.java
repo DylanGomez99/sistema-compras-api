@@ -25,6 +25,10 @@ public class OrdenCompra {
     private Articulo articulo;
 
     @ManyToOne
+    @JoinColumn(name = "proveedor_id")
+    private Proveedor proveedor;
+
+    @ManyToOne
     @JoinColumn(name = "unidad_medida_id")
     private UnidadMedida unidadMedida;
 
@@ -63,6 +67,13 @@ public class OrdenCompra {
 
     public void setEstado(Boolean estado) {
         this.estado = estado;
+    }
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
     }
 
     public Articulo getArticulo() {

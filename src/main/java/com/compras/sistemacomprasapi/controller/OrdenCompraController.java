@@ -8,7 +8,11 @@ import com.compras.sistemacomprasapi.service.UnidadMedidaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import com.lowagie.text.Document;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 @Controller
@@ -68,5 +72,41 @@ public class OrdenCompraController {
     public String eliminar(@PathVariable Long id) {
         ordenCompraService.eliminar(id);
         return "redirect:/ordencompra";
+    }
+
+    @GetMapping("/pdf/{id}")
+    public void generarPDF(@PathVariable Long id,
+                           HttpServletResponse response) throws Exception {
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition",
+                "attachment; filename=OrdenCompra_" + id + ".pdf");
+
+        OrdenCompra orden = ordenCompraService.buscarPorId(id);
+
+        Document documento = new Document();
+
+        PdfWriter.getInstance(documento, response.getOutputStream());
+
+        documento.open();
+
+        Font titulo = new Font(Font.HELVETICA, 18, Font.BOLD);
+
+        documento.add(new Paragraph("ORDEN DE COMPRA", titulo));
+        documento.add(new Paragraph(" "));
+        documento.add(new Paragraph("Número: " + orden.getNumeroOrden()));
+        documento.add(new Paragraph("Fecha: " + orden.getFechaOrden()));
+        documento.add(new Paragraph("Proveedor: " + orden.getProveedor().getNombre()));
+        documento.add(new Paragraph("Artículo: " + orden.getArticulo().getDescripcion()));
+        documento.add(new Paragraph("Cantidad: " + orden.getCantidad()));
+        documento.add(new Paragraph("Unidad: " + orden.getUnidadMedida().getDescripcion()));
+        documento.add(new Paragraph("Costo Unitario: RD$ " + orden.getCostoUnitario()));
+
+        double total = orden.getCantidad() * orden.getCostoUnitario();
+
+        documento.add(new Paragraph("----------------------------------------"));
+        documento.add(new Paragraph("TOTAL: RD$ " + total));
+
+        documento.close();
     }
 }

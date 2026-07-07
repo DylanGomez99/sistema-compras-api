@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Gestión de Proveedores</title>
+
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -30,18 +31,43 @@
 
                     <form th:action="@{/proveedor/guardar}"
                           th:object="${proveedor}"
-                          method="post">
+                          method="post"
+                          onsubmit="return validarDocumento()">
 
-                        <div class="row">
+                        <div class="row g-3">
+
+                            <div class="col-md-2">
+                                <label class="form-label">Tipo</label>
+                                <select class="form-select"
+                                        id="tipoDocumento"
+                                        th:field="*{tipoDocumento}"
+                                        onchange="cambiarDocumento()">
+                                    <option value="Cedula">Cédula</option>
+                                    <option value="RNC">RNC</option>
+                                </select>
+                            </div>
 
                             <div class="col-md-3">
-                                <label class="form-label">Nombre</label>
+                                <label class="form-label">Cédula / RNC</label>
+                                <input id="documento"
+                                       class="form-control"
+                                       th:field="*{cedulaRnc}"
+                                       maxlength="11"
+                                       placeholder="00112345678"
+                                       inputmode="numeric"
+                                       oninput="soloNumeros(this)"
+                                       required>
+                                <div id="mensajeDocumento" class="form-text"></div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Nombre Comercial</label>
                                 <input class="form-control"
                                        th:field="*{nombre}"
                                        required>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label">Correo</label>
                                 <input type="email"
                                        class="form-control"
@@ -58,7 +84,6 @@
 
                             <div class="col-md-2">
                                 <label class="form-label">Estado</label>
-
                                 <select class="form-select"
                                         th:field="*{estado}">
                                     <option value="true">Activo</option>
@@ -67,14 +92,10 @@
                             </div>
 
                             <div class="col-md-2 d-flex align-items-end">
-
                                 <button class="btn btn-success w-100"
                                         type="submit">
-
                                     Guardar
-
                                 </button>
-
                             </div>
 
                         </div>
@@ -96,48 +117,40 @@
                     <table class="table table-striped table-hover">
 
                         <thead class="table-dark">
-
                         <tr>
-
                             <th>ID</th>
-                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Cédula / RNC</th>
+                            <th>Nombre Comercial</th>
                             <th>Correo</th>
                             <th>Teléfono</th>
                             <th>Estado</th>
                             <th>Acciones</th>
-
                         </tr>
-
                         </thead>
 
                         <tbody>
-
                         <tr th:each="prov : ${proveedores}">
 
                             <td th:text="${prov.id}"></td>
-
+                            <td th:text="${prov.tipoDocumento}"></td>
+                            <td th:text="${prov.cedulaRnc}"></td>
                             <td th:text="${prov.nombre}"></td>
-
                             <td th:text="${prov.correo}"></td>
-
                             <td th:text="${prov.telefono}"></td>
 
                             <td>
-
                                 <span class="badge bg-success"
                                       th:if="${prov.estado}">
                                     Activo
                                 </span>
-
                                 <span class="badge bg-secondary"
                                       th:unless="${prov.estado}">
                                     Inactivo
                                 </span>
-
                             </td>
 
                             <td>
-
                                 <a class="btn btn-primary btn-sm"
                                    th:href="@{/proveedor/editar/{id}(id=${prov.id})}">
                                     Editar
@@ -146,15 +159,11 @@
                                 <a class="btn btn-danger btn-sm"
                                    th:href="@{/proveedor/eliminar/{id}(id=${prov.id})}"
                                    onclick="return confirm('¿Desea eliminar este proveedor?')">
-
                                     Eliminar
-
                                 </a>
-
                             </td>
 
                         </tr>
-
                         </tbody>
 
                     </table>
@@ -168,6 +177,106 @@
     </div>
 
 </div>
+
+<script>
+    function soloNumeros(input) {
+        input.value = input.value.replace(/\D/g, '');
+    }
+
+    function cambiarDocumento(limpiar = true) {
+        let tipo = document.getElementById("tipoDocumento").value;
+        let input = document.getElementById("documento");
+        let mensaje = document.getElementById("mensajeDocumento");
+
+        if (limpiar) {
+            input.value = "";
+        }
+
+        mensaje.innerText = "";
+        mensaje.className = "form-text";
+
+        if (tipo === "Cedula") {
+            input.maxLength = 11;
+            input.placeholder = "00112345678";
+        } else {
+            input.maxLength = 9;
+            input.placeholder = "101123456";
+        }
+    }
+
+    function validarCedula(cedula) {
+        if (!/^\d{11}$/.test(cedula)) return false;
+        if (cedula === "00000000000") return false;
+
+        let multiplicadores = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
+        let suma = 0;
+
+        for (let i = 0; i < 10; i++) {
+            let producto = parseInt(cedula[i]) * multiplicadores[i];
+
+            if (producto >= 10) {
+                producto = Math.floor(producto / 10) + (producto % 10);
+            }
+
+            suma += producto;
+        }
+
+        let digitoVerificador = (10 - (suma % 10)) % 10;
+
+        return digitoVerificador === parseInt(cedula[10]);
+    }
+
+    function validarRNC(rnc) {
+        if (!/^\d{9}$/.test(rnc)) return false;
+        if (rnc === "000000000") return false;
+
+        let multiplicadores = [7, 9, 8, 6, 5, 4, 3, 2];
+        let suma = 0;
+
+        for (let i = 0; i < 8; i++) {
+            suma += parseInt(rnc[i]) * multiplicadores[i];
+        }
+
+        let residuo = suma % 11;
+        let digitoVerificador = 11 - residuo;
+
+        if (digitoVerificador === 10) digitoVerificador = 1;
+        if (digitoVerificador === 11) digitoVerificador = 2;
+
+        return digitoVerificador === parseInt(rnc[8]);
+    }
+
+    function validarDocumento() {
+        let tipo = document.getElementById("tipoDocumento").value;
+        let documento = document.getElementById("documento").value;
+        let mensaje = document.getElementById("mensajeDocumento");
+
+        let valido = false;
+
+        if (tipo === "Cedula") {
+            valido = validarCedula(documento);
+        } else {
+            valido = validarRNC(documento);
+        }
+
+        if (!valido) {
+            mensaje.innerText = tipo === "Cedula"
+                ? "La cédula debe tener 11 dígitos y ser válida."
+                : "El RNC debe tener 9 dígitos y ser válido.";
+
+            mensaje.className = "form-text text-danger";
+            return false;
+        }
+
+        mensaje.innerText = "Documento válido.";
+        mensaje.className = "form-text text-success";
+        return true;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        cambiarDocumento(false);
+    });
+</script>
 
 </body>
 </html>

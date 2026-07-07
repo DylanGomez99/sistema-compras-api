@@ -136,11 +136,14 @@
                                    th:href="@{/ordencompra/editar/{id}(id=${orden.id})}">
                                     Editar
                                 </a>
-
                                 <a class="btn btn-danger btn-sm"
                                    th:href="@{/ordencompra/eliminar/{id}(id=${orden.id})}"
                                    onclick="return confirm('¿Desea eliminar esta orden?')">
                                     Eliminar
+                                </a>
+                                <a class="btn btn-warning btn-sm"
+                                   th:href="@{/ordencompra/pdf/{id}(id=${orden.id})}">
+                                    PDF
                                 </a>
                             </td>
                         </tr>
