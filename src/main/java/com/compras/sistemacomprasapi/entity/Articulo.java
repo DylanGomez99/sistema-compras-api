@@ -1,6 +1,10 @@
 package com.compras.sistemacomprasapi.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "articulo")
@@ -9,17 +13,23 @@ public class Articulo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    @NotBlank(message = "La descripción del artículo es obligatoria")
+    @Size(max = 100, message = "La descripción no puede exceder los 100 caracteres")
     @Column(nullable = false, length = 100)
     private String descripcion;
 
+    @NotBlank(message = "La marca del artículo es obligatoria")
+    @Size(max = 100, message = "La marca no puede exceder los 100 caracteres")
     @Column(nullable = false, length = 100)
     private String marca;
 
     @ManyToOne
     @JoinColumn(name = "unidad_medida_id")
     private UnidadMedida unidadMedida;
-
+    
+    @NotNull(message = "La existencia es obligatoria")
+    @PositiveOrZero(message = "La existencia no puede ser un número negativo")
     @Column(nullable = false)
     private Integer existencia;
 
