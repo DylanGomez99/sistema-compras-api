@@ -5,15 +5,19 @@ import com.compras.sistemacomprasapi.service.ArticuloService;
 import com.compras.sistemacomprasapi.service.OrdenCompraService;
 import com.compras.sistemacomprasapi.service.ProveedorService;
 import com.compras.sistemacomprasapi.service.UnidadMedidaService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.lowagie.text.Document;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/ordencompra")
@@ -37,13 +41,21 @@ public class OrdenCompraController {
     }
 
     @GetMapping
-    public String listar(Model model) {
+    public String listar(@RequestParam(name = "buscar", required = false) String buscar, Model model) {
         OrdenCompra ordenCompra = new OrdenCompra();
         ordenCompra.setFechaOrden(LocalDate.now());
         ordenCompra.setEstado(true);
 
+        List<OrdenCompra> ordenes;
+        if (buscar != null && !buscar.trim().isEmpty()) {
+            ordenes = ordenCompraService.buscarPorCriterio(buscar.trim());
+        } else {
+            ordenes = ordenCompraService.listarTodos();
+        }
+
         model.addAttribute("ordenCompra", ordenCompra);
-        model.addAttribute("ordenes", ordenCompraService.listarTodos());
+        model.addAttribute("ordenes", ordenes);
+        model.addAttribute("buscar", buscar); 
         model.addAttribute("proveedores", proveedorService.listarTodos());
         model.addAttribute("articulos", articuloService.listarTodos());
         model.addAttribute("unidades", unidadMedidaService.listarTodos());
@@ -52,7 +64,18 @@ public class OrdenCompraController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute OrdenCompra ordenCompra) {
+    public String guardar(@Valid @ModelAttribute("ordenCompra") OrdenCompra ordenCompra,
+                          BindingResult result,
+                          Model model) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("ordenes", ordenCompraService.listarTodos());
+            model.addAttribute("proveedores", proveedorService.listarTodos());
+            model.addAttribute("articulos", articuloService.listarTodos());
+            model.addAttribute("unidades", unidadMedidaService.listarTodos());
+            return "OrdenCompra";
+        }
+
         ordenCompraService.guardar(ordenCompra);
         return "redirect:/ordencompra";
     }
