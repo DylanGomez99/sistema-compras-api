@@ -1,6 +1,10 @@
 package com.compras.sistemacomprasapi.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 
 @Entity
@@ -11,12 +15,15 @@ public class OrdenCompra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El número de orden es obligatorio")
     @Column(nullable = false, length = 30)
     private String numeroOrden;
 
+    @NotNull(message = "La fecha de orden es obligatoria")
     @Column(nullable = false)
     private LocalDate fechaOrden;
 
+    @NotNull(message = "El estado es obligatorio")
     @Column(nullable = false)
     private Boolean estado;
 
@@ -32,9 +39,13 @@ public class OrdenCompra {
     @JoinColumn(name = "unidad_medida_id")
     private UnidadMedida unidadMedida;
 
+    @NotNull(message = "La cantidad es obligatoria")
+    @Positive(message = "La cantidad debe ser mayor a cero")
     @Column
     private Integer cantidad;
 
+    @NotNull(message = "El costo unitario es obligatorio")
+    @PositiveOrZero(message = "El costo unitario no puede ser negativo")
     @Column
     private Double costoUnitario;
 
@@ -43,6 +54,10 @@ public class OrdenCompra {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNumeroOrden() {
@@ -68,6 +83,7 @@ public class OrdenCompra {
     public void setEstado(Boolean estado) {
         this.estado = estado;
     }
+
     public Proveedor getProveedor() {
         return proveedor;
     }
