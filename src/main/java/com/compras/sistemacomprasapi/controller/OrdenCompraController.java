@@ -28,12 +28,10 @@ public class OrdenCompraController {
     private final ArticuloService articuloService;
     private final UnidadMedidaService unidadMedidaService;
 
-    public OrdenCompraController(
-            OrdenCompraService ordenCompraService,
-            ProveedorService proveedorService,
-            ArticuloService articuloService,
-            UnidadMedidaService unidadMedidaService
-    ) {
+    public OrdenCompraController(OrdenCompraService ordenCompraService,
+                                 ProveedorService proveedorService,
+                                 ArticuloService articuloService,
+                                 UnidadMedidaService unidadMedidaService) {
         this.ordenCompraService = ordenCompraService;
         this.proveedorService = proveedorService;
         this.articuloService = articuloService;
@@ -46,16 +44,13 @@ public class OrdenCompraController {
         ordenCompra.setFechaOrden(LocalDate.now());
         ordenCompra.setEstado(true);
 
-        List<OrdenCompra> ordenes;
-        if (buscar != null && !buscar.trim().isEmpty()) {
-            ordenes = ordenCompraService.buscarPorCriterio(buscar.trim());
-        } else {
-            ordenes = ordenCompraService.listarTodos();
-        }
+        List<OrdenCompra> ordenes = (buscar != null && !buscar.trim().isEmpty())
+                ? ordenCompraService.buscarPorCriterio(buscar.trim())
+                : ordenCompraService.listarTodos();
 
         model.addAttribute("ordenCompra", ordenCompra);
         model.addAttribute("ordenes", ordenes);
-        model.addAttribute("buscar", buscar); 
+        model.addAttribute("buscar", buscar);
         model.addAttribute("proveedores", proveedorService.listarTodos());
         model.addAttribute("articulos", articuloService.listarTodos());
         model.addAttribute("unidades", unidadMedidaService.listarTodos());
@@ -65,9 +60,7 @@ public class OrdenCompraController {
 
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("ordenCompra") OrdenCompra ordenCompra,
-                          BindingResult result,
-                          Model model) {
-
+                          BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("ordenes", ordenCompraService.listarTodos());
             model.addAttribute("proveedores", proveedorService.listarTodos());
@@ -87,7 +80,6 @@ public class OrdenCompraController {
         model.addAttribute("proveedores", proveedorService.listarTodos());
         model.addAttribute("articulos", articuloService.listarTodos());
         model.addAttribute("unidades", unidadMedidaService.listarTodos());
-
         return "OrdenCompra";
     }
 
@@ -98,23 +90,16 @@ public class OrdenCompraController {
     }
 
     @GetMapping("/pdf/{id}")
-    public void generarPDF(@PathVariable Long id,
-                           HttpServletResponse response) throws Exception {
-
+    public void generarPDF(@PathVariable Long id, HttpServletResponse response) throws Exception {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition",
-                "attachment; filename=OrdenCompra_" + id + ".pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=OrdenCompra_" + id + ".pdf");
 
         OrdenCompra orden = ordenCompraService.buscarPorId(id);
-
         Document documento = new Document();
-
         PdfWriter.getInstance(documento, response.getOutputStream());
-
         documento.open();
 
         Font titulo = new Font(Font.HELVETICA, 18, Font.BOLD);
-
         documento.add(new Paragraph("ORDEN DE COMPRA", titulo));
         documento.add(new Paragraph(" "));
         documento.add(new Paragraph("Número: " + orden.getNumeroOrden()));
@@ -126,10 +111,8 @@ public class OrdenCompraController {
         documento.add(new Paragraph("Costo Unitario: RD$ " + orden.getCostoUnitario()));
 
         double total = orden.getCantidad() * orden.getCostoUnitario();
-
         documento.add(new Paragraph("----------------------------------------"));
         documento.add(new Paragraph("TOTAL: RD$ " + total));
-
         documento.close();
     }
 }

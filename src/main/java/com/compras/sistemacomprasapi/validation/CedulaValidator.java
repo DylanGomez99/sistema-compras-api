@@ -7,7 +7,7 @@ public class CedulaValidator implements ConstraintValidator<CedulaValida, String
 
     @Override
     public boolean isValid(String cedula, ConstraintValidatorContext context) {
-      
+
         if (cedula == null || cedula.trim().isEmpty()) {
             return false;
         }

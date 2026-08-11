@@ -25,7 +25,8 @@
                 </div>
 
                 <div class="card-body">
-                    <form th:action="@{/ordencompra/guardar}" th:object="${ordenCompra}" method="post">
+                    <form th:action="@{/ordencompra/guardar}" th:object="${ordenCompra}" method="post"
+                          onsubmit="document.getElementById('btnGuardarOrden').disabled = true; document.getElementById('btnGuardarOrden').innerText = 'Guardando...';">
 
                         <input type="hidden" th:field="*{id}">
 
@@ -96,7 +97,7 @@
                             </div>
                         </div>
 
-                        <button class="btn btn-success" type="submit">
+                        <button class="btn btn-success" type="submit" id="btnGuardarOrden">
                             Guardar Orden
                         </button>
 
@@ -108,7 +109,7 @@
                 <div class="card-body">
                     <form th:action="@{/ordencompra}" method="get" class="row g-2">
                         <div class="col-md-9">
-                            <input type="text" name="buscar" th:value="${buscar}" 
+                            <input type="text" name="buscar" th:value="${buscar}"
                                    class="form-control" placeholder="Buscar por N° de orden o nombre de proveedor...">
                         </div>
                         <div class="col-md-3 d-flex gap-2">
@@ -186,11 +187,6 @@
             </div>
 
         </main>
-    </div>
-</div>
-
-</body>
-</html>
     </div>
 </div>
 

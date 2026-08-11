@@ -31,7 +31,7 @@
                         <div class="card-body">
                             <span class="card-icon">🏢</span>
                             <h6>Departamentos</h6>
-                            <h2>0</h2>
+                            <h2 th:text="${totalDepartamentos}">0</h2>
                             <small class="text-success">Activos</small>
                         </div>
                     </div>
@@ -42,7 +42,7 @@
                         <div class="card-body">
                             <span class="card-icon">🚚</span>
                             <h6>Proveedores</h6>
-                            <h2>0</h2>
+                            <h2 th:text="${totalProveedores}">0</h2>
                             <small class="text-success">Activos</small>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                         <div class="card-body">
                             <span class="card-icon">📦</span>
                             <h6>Artículos</h6>
-                            <h2>0</h2>
+                            <h2 th:text="${totalArticulos}">0</h2>
                             <small class="text-primary">Registrados</small>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                         <div class="card-body">
                             <span class="card-icon">🧾</span>
                             <h6>Órdenes</h6>
-                            <h2>0</h2>
+                            <h2 th:text="${totalOrdenes}">0</h2>
                             <small class="text-primary">Registradas</small>
                         </div>
                     </div>
@@ -113,7 +113,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
+<script th:inline="javascript">
+    const totalDepartamentos = /*[[${totalDepartamentos}]]*/ 0;
+    const totalProveedores = /*[[${totalProveedores}]]*/ 0;
+    const totalArticulos = /*[[${totalArticulos}]]*/ 0;
+    const totalOrdenes = /*[[${totalOrdenes}]]*/ 0;
+
     const ctx = document.getElementById('dashboardChart');
 
     new Chart(ctx, {
@@ -122,7 +127,7 @@
             labels: ['Departamentos', 'Proveedores', 'Artículos', 'Órdenes'],
             datasets: [{
                 label: 'Registros',
-                data: [5, 8, 15, 4],
+                data: [totalDepartamentos, totalProveedores, totalArticulos, totalOrdenes],
                 borderWidth: 1,
                 borderRadius: 8
             }]
