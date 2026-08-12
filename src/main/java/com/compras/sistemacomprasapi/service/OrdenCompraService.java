@@ -29,23 +29,33 @@ public class OrdenCompraService {
     }
 
     public OrdenCompra guardar(OrdenCompra ordenCompra) {
+        // 🔹 Validaciones contra valores inválidos
+        if (ordenCompra.getCantidad() == null || ordenCompra.getCantidad() <= 0) {
+            throw new IllegalArgumentException("La cantidad debe ser mayor que cero");
+        }
+
+        if (ordenCompra.getCostoUnitario() == null || ordenCompra.getCostoUnitario() <= 0) {
+            throw new IllegalArgumentException("El costo unitario debe ser mayor que cero");
+        }
+
+        // 🔹 Actualizar existencia del artículo
         if (ordenCompra.getArticulo() != null && ordenCompra.getArticulo().getId() != null) {
             Articulo articulo = articuloRepository.findById(ordenCompra.getArticulo().getId()).orElse(null);
-            if (articulo != null && ordenCompra.getCantidad() != null) {
+            if (articulo != null) {
                 articulo.setExistencia(articulo.getExistencia() + ordenCompra.getCantidad());
                 articuloRepository.save(articulo);
                 ordenCompra.setArticulo(articulo);
             }
         }
 
+        // 🔹 Guardar orden de compra
         OrdenCompra guardada = ordenCompraRepository.save(ordenCompra);
 
-        if (guardada.getCantidad() != null && guardada.getCostoUnitario() != null) {
-            BigDecimal monto = BigDecimal.valueOf(guardada.getCantidad())
-                    .multiply(BigDecimal.valueOf(guardada.getCostoUnitario()));
+        // 🔹 Registrar asiento contable
+        BigDecimal monto = BigDecimal.valueOf(guardada.getCantidad())
+                .multiply(BigDecimal.valueOf(guardada.getCostoUnitario()));
 
-            contabilidadService.registrarAsientoPorOrdenCompra(guardada.getNumeroOrden(), monto);
-        }
+        contabilidadService.registrarAsientoPorOrdenCompra(guardada.getNumeroOrden(), monto);
 
         return guardada;
     }
@@ -58,7 +68,9 @@ public class OrdenCompraService {
         ordenCompraRepository.deleteById(id);
     }
 
+    // 🔹 Búsqueda de órdenes de compra
     public List<OrdenCompra> buscarPorCriterio(String criterio) {
-        return ordenCompraRepository.buscarPorCriterio(criterio);
-    }
+    return ordenCompraRepository.buscarPorCriterio(criterio);
+}
+
 }
